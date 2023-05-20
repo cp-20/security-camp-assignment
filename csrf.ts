@@ -1,7 +1,6 @@
 import puppeteer from 'https://deno.land/x/puppeteer@16.2.0/mod.ts';
 import { serve } from 'https://deno.land/std@0.153.0/http/server.ts';
 import { serveDir } from 'https://deno.land/std@0.141.0/http/file_server.ts';
-import { ERROR_SXS_XML_E_EXPECTINGCLOSEQUOTE } from 'https://deno.land/std@0.177.0/node/internal_binding/_winerror.ts';
 
 serve((request) => serveDir(request));
 
@@ -31,9 +30,24 @@ await page.click('#loginButton');
 
 await sleep(1);
 
-await page.goto('http://localhost:8000/csrf.html');
+// const tokenCookie = (await page.cookies()).find(
+//   (cookie) => cookie.name === 'token'
+// );
+// if (tokenCookie !== undefined) {
+//   await page.setCookie({ sameSite: 'Strict', ...tokenCookie });
+// }
 
-await page.type('#username', 'this is altered username');
+// await sleep(1);
+
+console.log(await page.cookies());
+
+await page.goto('http://127.0.0.1:8000/csrf.html');
+
+const randomUsername = Math.random().toString(36).substring(7);
+
+console.log(`change username to ${randomUsername}`);
+
+await page.type('#username', randomUsername);
 await page.click('#submit');
 
 await sleep(1000);
